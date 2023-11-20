@@ -1,6 +1,6 @@
-import { Game, type GameInterface } from "../models/game"
-import { Score } from "@/models/roll"
-import { Ref, computed, ref, unref } from "vue"
+import { Game, type GameInterface } from '../models/game'
+import { Score } from '@/models/roll'
+import { Ref, computed, ref, unref } from 'vue'
 
 const game = ref(new Game())
 

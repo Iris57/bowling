@@ -1,5 +1,5 @@
-import { Frame, type FrameNumber, type FrameInterface } from "./frame"
-import { Roll, type Score, type RollInterface } from "./roll"
+import { Frame, type FrameNumber, type FrameInterface } from './frame'
+import { Roll, type Score, type RollInterface } from './roll'
 
 export type GameInterface = Pick<Game, keyof Game>
 

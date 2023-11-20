@@ -1,5 +1,5 @@
-import { unref } from "vue";
-import { useGame } from "./use-game";
+import { unref } from 'vue'
+import { useGame } from './use-game'
 
 // in the best case, we would test the models, but to keep tests shorter, just standard and example/edge case tests are done here
 describe('useGame', () => {

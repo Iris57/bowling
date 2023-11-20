@@ -17,7 +17,7 @@
                                 <div v-if="frame.rolls.length === 0" class="roll"></div>
                                 <div v-else v-for="(roll, rollIndex) in frame.rolls" class="roll"
                                     :key="`frame${frame.frameNumber}_roll${rollIndex}`">
-                                    {{ rollText(roll, rollIndex, frame) }}</div>
+                                    {{ rollText(roll) }}</div>
                             </div>
                             <div class="pt-4 score text-h6">{{ frame.score }}</div>
                         </v-card-text>
@@ -29,14 +29,13 @@
 </template>
 
 <script setup lang="ts">
-import { FrameInterface } from '@/models/frame';
-import { RollInterface } from '@/models/roll';
-import { useGame } from '@/utils/use-game';
+import { RollInterface } from '@/models/roll'
+import { useGame } from '@/utils/use-game'
 
 
 const { game } = useGame()
 
-function rollText(roll: RollInterface, rollIndex: number, frame: FrameInterface) {
+function rollText(roll: RollInterface) {
     return roll.isStrike ? 'x' : (roll.isMiss ? '-' : (roll.isSpare ? '/' : roll.score))
 }
 </script>

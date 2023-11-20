@@ -16,10 +16,8 @@
 </template>
 
 <script setup lang="ts">
-import { useGame } from '@/utils/use-game';
-import { ref, watch } from 'vue';
-import { unref } from 'vue';
-import { Ref, computed } from 'vue'
+import { useGame } from '@/utils/use-game'
+import { ref, watch } from 'vue'
 
 const { game, roll } = useGame()
 

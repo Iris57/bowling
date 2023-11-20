@@ -28,7 +28,7 @@
 </template>
 
 <script setup lang="ts">
-import { useGame } from '@/utils/use-game';
+import { useGame } from '@/utils/use-game'
 
 
 const { input, maxInput, roll, isGameOver, reset } = useGame()
