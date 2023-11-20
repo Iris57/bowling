@@ -37,7 +37,6 @@ import { useGame } from '@/utils/use-game';
 const { game } = useGame()
 
 function rollText(roll: RollInterface, rollIndex: number, frame: FrameInterface) {
-    console.log(roll.score, rollIndex)
     return roll.isStrike ? 'x' : (roll.isMiss ? '-' : (rollIndex === 1 && frame.hasSpare ? '/'
         :
         roll.score))
