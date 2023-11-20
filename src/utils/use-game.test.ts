@@ -24,6 +24,31 @@ describe('useGame', () => {
         expect(unref(game).frames[0].score).toBe(8)
     })
 
+    describe('stati are correct', () => {
+        test('roll has status for miss', () => {
+            const { game, input, roll } = testGame
+            input.value = 0
+            roll()
+            expect(unref(game).frames[0].rolls[0].isMiss).toBe(true)
+        })
+        test('roll and frame have status for strike', () => {
+            const { game, input, roll } = testGame
+            input.value = 10
+            roll()
+            expect(unref(game).frames[0].rolls[0].isStrike).toBe(true)
+            expect(unref(game).frames[0].hasStrike).toBe(true)
+        })
+        test('roll and frame have status for spare', () => {
+            const { game, input, roll } = testGame
+            input.value = 5
+            roll()
+            input.value = 5
+            roll()
+            expect(unref(game).frames[0].rolls[1].isSpare).toBe(true)
+            expect(unref(game).frames[0].hasSpare).toBe(true)
+        })
+    })
+
     test('has correct frame numbers after strike and spare', () => {
         const { game, input, roll } = testGame
 

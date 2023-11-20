@@ -7,6 +7,8 @@ export class Game {
     private _frames: FrameInterface[] = []
     private _rolls: RollInterface[] = []
     private _round: number = 0
+    private _rollsToTriggerSpareFrame: Map<number, FrameInterface> = new Map()
+    private _rollsToTriggerStrikeFrame: Map<number, FrameInterface> = new Map()
 
     private init() {
         this._frames = []
@@ -15,6 +17,8 @@ export class Game {
             this._frames.push(new Frame(i as FrameNumber))
             i++
         }
+        this._rollsToTriggerSpareFrame = new Map()
+        this._rollsToTriggerStrikeFrame = new Map()
 
         this._rolls = []
         this._round = 0
@@ -32,7 +36,6 @@ export class Game {
         if (this._round < 9) {
             this._round++
         }
-        return this._frames[this._round]
     }
 
     get activeFrame() {
@@ -43,45 +46,51 @@ export class Game {
         return this._rolls
     }
 
-    private handleStrike() {
-        const rollNumber = this._rolls.length
-        if (rollNumber < 3) {
-            return
+    private addStrikesAndSpares(currentRollNumber: number) {
+        if (this.activeFrame.hasSpare) {
+            this._rollsToTriggerSpareFrame.set(currentRollNumber + 1, this.activeFrame)
         }
-
-        const possibleSpikeRoll = this._rolls[rollNumber - 3]
-        if (possibleSpikeRoll.isStrike) {
-            const scoresToAdd = possibleSpikeRoll.frame.isLastFrame ? 0 : this._rolls[rollNumber - 2].score + this._rolls[rollNumber - 1].score
-            possibleSpikeRoll.frame.score = this.score + possibleSpikeRoll.frame.sum + scoresToAdd
+        if (this.activeFrame.hasStrike) {
+            this._rollsToTriggerStrikeFrame.set(currentRollNumber + 2, this.activeFrame)
         }
     }
 
-    private handleSpare() {
-        const rollNumber = this._rolls.length
-        if (this._round > 0) {
-            const previousFrame = this._frames[this._round - 1]
+    private updateStrikesAndSpares(currentRollNumber: number) {
+        const possibleSpareFrame = this._rollsToTriggerSpareFrame.get(currentRollNumber)
+        const possibleStrikeFrame = this._rollsToTriggerStrikeFrame.get(currentRollNumber)
 
-            if (previousFrame.hasSpare && !previousFrame.score) {
-                previousFrame.score = this.score + previousFrame.sum + this._rolls[rollNumber - 1].score
-            }
+        if (possibleSpareFrame !== undefined) {
+            possibleSpareFrame.score = this.score + possibleSpareFrame.sum + this._rolls[currentRollNumber].score
+            this._rollsToTriggerSpareFrame.delete(currentRollNumber)
+        }
+
+        if (possibleStrikeFrame !== undefined) {
+            const scoresToAdd = possibleStrikeFrame.isLastFrame ? 0 : this._rolls[currentRollNumber - 1].score + this._rolls[currentRollNumber].score
+            possibleStrikeFrame.score = this.score + possibleStrikeFrame.sum + scoresToAdd
+            this._rollsToTriggerStrikeFrame.delete(currentRollNumber)
         }
     }
 
     public addRoll(value: Score) {
-        if (!this.activeFrame.isMaxRolls) {
+        if (!this.activeFrame.allRollsDone) {
             const frame = this.activeFrame
-            const roll = new Roll(value, frame)
+            const roll = new Roll(value)
             this._rolls.push(roll)
             frame.addRoll(roll)
-            this.handleStrike()
-            this.handleSpare()
+            if (frame.hasSpare) {
+                roll.spare = true
+            }
 
-            if (!(frame.hasSpare || frame.hasStrike) && frame.isMaxRolls) {
+            const currentRollNumber = this._rolls.length - 1
+            this.addStrikesAndSpares(currentRollNumber)
+            this.updateStrikesAndSpares(currentRollNumber)
+
+            if (!(frame.hasSpare || frame.hasStrike) && frame.allRollsDone) {
                 frame.score = this.score + frame.sum
             }
         }
 
-        if (this.activeFrame.isMaxRolls) {
+        if (this.activeFrame.allRollsDone) {
             this.nextFrame()
         }
     }
@@ -91,7 +100,7 @@ export class Game {
     }
 
     get isGameOver() {
-        return this.activeFrame.isLastFrame && this.activeFrame.isMaxRolls
+        return this.activeFrame.isLastFrame && this.activeFrame.allRollsDone
     }
 
     public reset() {

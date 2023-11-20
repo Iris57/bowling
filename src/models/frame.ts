@@ -21,7 +21,7 @@ export class Frame {
         return this._rolls
     }
 
-    get isMaxRolls() {
+    get allRollsDone() {
         // extra check for last frame with strike
         if (this.isLastFrame && this.hasStrike) {
             return this._rolls.length === 3
@@ -50,6 +50,7 @@ export class Frame {
     }
 
     get pinsLeft() {
+        // extra check for last frame with strike
         if (this.isLastFrame && this.hasStrike) {
             const previosRoll = this._rolls[this._rolls.length - 1]
             return previosRoll.isStrike ? 10 : (10 - previosRoll.score)

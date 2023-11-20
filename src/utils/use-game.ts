@@ -45,5 +45,4 @@ export function useGame(): UseGameInterface {
         isGameOver,
         maxInput,
     }
-
 }
